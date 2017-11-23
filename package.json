@@ -1,0 +1,29 @@
+{
+  "name": "kiite",
+  "version": "0.0.0",
+  "description": "TODO",
+  "main": "kiite.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "kiite"
+  ],
+  "author": "talmobi <talmo.christian@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/talmobi/kiite"
+  },
+  "bugs": {
+    "url": "https://github.com/talmobi/kiite/issues",
+    "email": "talmo.christian@gmail.com"
+  },
+  "dependencies": {
+    "dasu": "0.0.21"
+  },
+  "devDependencies": {
+    "express": "~4.16.2"
+  }
+}

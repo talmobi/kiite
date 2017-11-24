@@ -210,7 +210,6 @@ module.exports = function ( server ) {
           debug( 'new client [ ' + ID + ' ]' )
           debug( 'new client ip: ' + ip )
 
-
           client = {
             ID: ID,
             ip: ip,
@@ -245,6 +244,7 @@ module.exports = function ( server ) {
             request: req
           }
 
+          ee.emit( 'connect', socketApi )
           ee.emit( 'connection', socketApi )
         } else {
           // unknown intentions -- unknown user

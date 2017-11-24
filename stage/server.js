@@ -1,6 +1,6 @@
 var http = require( 'http' )
 
-var kiite = require( '../dist/kiite.js' )
+var kiite = require( '../dist/kiite.min.js' )
 
 var express = require( 'express' )
 var app = express()
@@ -46,7 +46,7 @@ io.on( 'connection', function ( socket ) {
           var name = args[ 0 ]
           if ( socket.name ) {
             var msg = (
-              'name change! ' + socket.name + ' is now known as: ' + name
+              'name change! ' + socket.name + ' is now known as [ ' + name + ' ]'
             )
             delete names[ socket.name ]
             names[ name ] = socket
@@ -54,7 +54,7 @@ io.on( 'connection', function ( socket ) {
             console.log( msg )
             socket.broadcast( 'chat-message', msg )
           } else {
-            var msg = ( 'new name: ' + name )
+            var msg = ( socket.ID + ' is now known as [ ' + name + ' ]' )
             names[ name ] = socket
             socket.name = name
             console.log( msg )
@@ -93,7 +93,7 @@ io.on( 'connection', function ( socket ) {
       }
 
     } else {
-      console.log( 'CLIENT MESSAGE: ' + text )
+      console.log( 'CLIENT MESSAGE: ' + text.trim() )
       socket.broadcast( 'chat-message',
         ( socket.name || socket.ID ) + ': ' + text
       )

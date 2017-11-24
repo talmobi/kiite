@@ -1,8 +1,8 @@
-var kiite = require( '../dist/kiite.js' )
+var kiite = require( '../dist/kiite.min.js' )
 var io = kiite.connect( { port: 3000 } )
 
 io.on( 'chat-message', function ( text ) {
-  console.log( text )
+  console.log( text.trim() )
 } )
 
 process.stdin.on( 'data', function ( chunk ) {

@@ -1,9 +1,13 @@
 {
   "name": "kiite",
   "version": "0.0.0",
-  "description": "TODO",
-  "main": "kiite.js",
+  "description": "super basic longpolling sockets",
+  "main": "dist/kiite.js",
+  "files": [
+    "dist/kiite.js"
+  ],
   "scripts": {
+    "build": "browserify -s kiite --bare --no-bf -t [ babelify --presets [ env ] ] src/index.js -o dist/kiite.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -11,7 +15,7 @@
   ],
   "author": "talmobi <talmo.christian@gmail.com>",
   "license": "MIT",
-  "private": true,
+  "private": false,
   "repository": {
     "type": "git",
     "url": "https://github.com/talmobi/kiite"
@@ -21,9 +25,15 @@
     "email": "talmo.christian@gmail.com"
   },
   "dependencies": {
-    "dasu": "0.0.21"
   },
   "devDependencies": {
+    "cuid": "~1.3.8",
+    "dasu": "0.0.22",
+    "object-assign": "~4.1.1",
+    "babel-core": "~6.26.0",
+    "babel-preset-env": "~1.6.1",
+    "babelify": "~8.0.0",
+    "browserify": "~14.5.0",
     "express": "~4.16.2"
   }
 }

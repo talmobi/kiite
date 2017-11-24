@@ -82,10 +82,6 @@ module.exports = function connect ( _params ) {
   // only POST methods
   _params.method = 'POST'
 
-  function handleMessage ( data ) {
-    var evt = dara.evt
-  }
-
   // our user id given by the server
   var _ID
 
@@ -116,26 +112,15 @@ module.exports = function connect ( _params ) {
       params,
       function ( err, res, body ) {
         if ( err ) {
-          // try to connect soon
+          // let longpolling handle recovery
           debug( 'emit error' )
         } else {
           if ( res.status === 200 ) {
             // message sent OK
             debug( 'emit success' )
           } else {
+            // let longpolling handle recovery
             debug( 'res.status error: ' + res.status )
-
-            switch ( res.status ) {
-              case 444: // disconnected by server
-                console.log( 'disconnected by server' )
-
-              case 404:
-              default:
-                _ID = undefined
-                setTimeout( function () {
-                  reconnect() // reconnect
-                }, 1000 )
-            }
           }
         }
       }
@@ -188,41 +173,19 @@ module.exports = function connect ( _params ) {
             switch ( res.status ) {
               case 444: // disconnected by server
                 console.log( 'disconnected by server' )
+                break
 
               case 404:
-              default:
-                _ID = undefined
-                setTimeout( function () {
-                  reconnect() // reconnect
-                }, 1000 )
+                // console.log( 'unkown user or unknown event' )
+                break
             }
-          }
-        }
-      }
-    )
-  }
 
-  function connect () {
-    var params = cpy( _params )
+            // kill the _ID ( will reconnect )
+            _ID = undefined
 
-    params.data = { evt: 'connect' }
-
-    debug( 'connecting' )
-    req(
-      params,
-      function ( err, res, body ) {
-        if ( err ) console.log( err )
-
-        if ( res.status === 200 ) {
-          var data = JSON.parse( body )
-          if ( data.evt === 'connected' && data.ID && data.ID.length > 5 ) {
-            // connected successfully
-            console.log( 'connected' )
-            _ID = data.ID
-            poll()
-          } else {
-            debug( 'unknown connect response')
-            debug( body )
+            setTimeout( function () {
+              reconnect() // reconnect
+            }, 1000 )
           }
         }
       }
@@ -254,7 +217,7 @@ module.exports = function connect ( _params ) {
               _ID = data.ID
               poll()
             } else {
-              debug( 'unknown connect response')
+              debug( 'unknown connect response' )
               debug( body )
             }
           }

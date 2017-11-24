@@ -42,8 +42,6 @@ module.exports = function ( server ) {
   }
 
   function emit ( client, evt, data ) {
-    var ID = client.ID
-
     client.buffer.push( {
       evt: evt,
       data: data
@@ -67,7 +65,6 @@ module.exports = function ( server ) {
 
     var url = '/kiite.io'
     var listeners = server.listeners( 'request' ).slice( 0 )
-    var self = this
     server.removeAllListeners( 'request' )
     server.on( 'request', function ( req, res ) {
       if ( req.url.indexOf( url ) === 0 ) {
@@ -97,7 +94,7 @@ module.exports = function ( server ) {
   function handleRequest ( req, res ) {
     debug( '[middle], method: ' + req.method )
 
-    var length = 0
+    var length = 0 // eslint-disable-line no-unused-vars
     var body = []
     req.on( 'error', function ( err ) {
       console.error( err.stack )
@@ -120,6 +117,9 @@ module.exports = function ( server ) {
     try {
       var data = JSON.parse( body )
 
+      var ip = req.connection.remoteAddress
+      var ua = req.headers[ 'user-agent' ]
+
       var ID = data.ID
 
       debug( data )
@@ -132,9 +132,6 @@ module.exports = function ( server ) {
       }
 
       if ( client ) {
-        var ip = req.connection.remoteAddress
-        var ua = req.headers[ 'user-agent' ]
-
         if ( client.ip !== ip ) {
           debug( 'ip mismatch' )
           // TODO opts hook?
@@ -203,9 +200,6 @@ module.exports = function ( server ) {
         if ( data.evt === 'connect' ) {
           // wants to connect
           ID = cuid()
-
-          var ip = req.connection.remoteAddress
-          var ua = req.headers[ 'user-agent' ]
 
           debug( 'new client [ ' + ID + ' ]' )
           debug( 'new client ip: ' + ip )

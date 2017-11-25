@@ -20,6 +20,11 @@ module.exports = function connect ( _params ) {
   var _flushTimeout
   var _flushTime = Date.now()
 
+  var _closed = false
+
+  // our user id given by the server
+  var _ID
+
   // this is the functions return value
   var api = {
     on: ee.on,
@@ -31,7 +36,11 @@ module.exports = function connect ( _params ) {
 
       scheduleFlush()
     },
-    clients: {}
+    clients: {},
+    close: function () {
+      _closed = true
+      disconnect()
+    }
   }
 
   function scheduleFlush () {
@@ -82,9 +91,6 @@ module.exports = function connect ( _params ) {
   // only POST methods
   _params.method = 'POST'
 
-  // our user id given by the server
-  var _ID
-
   reconnect()
 
   function cpy ( a, b ) {
@@ -95,6 +101,23 @@ module.exports = function connect ( _params ) {
       }
     } )
     return o
+  }
+
+  function disconnect () {
+    var params = cpy( _params )
+
+    params.data = {
+      ID: _ID,
+      evt: 'disconnect'
+    }
+
+    debug( 'disconnecting' )
+    req(
+      params,
+      function ( err, res, body ) {
+        /* ignore */
+      }
+    )
   }
 
   function flush () {
@@ -128,6 +151,8 @@ module.exports = function connect ( _params ) {
   }
 
   function poll () {
+    if ( _closed ) return
+
     var params = cpy( _params )
 
     params.data = {
@@ -172,6 +197,8 @@ module.exports = function connect ( _params ) {
 
             switch ( res.status ) {
               case 444: // disconnected by server
+                ee.emit( 'disconnect' )
+                ee.emit( 'disconnected' )
                 console.log( 'disconnected by server' )
                 break
 
@@ -193,6 +220,8 @@ module.exports = function connect ( _params ) {
   }
 
   function reconnect () {
+    if ( _closed ) return
+
     var params = cpy( _params )
 
     params.data = { evt: 'connect' }
@@ -212,9 +241,13 @@ module.exports = function connect ( _params ) {
             var data = JSON.parse( body )
             if ( data.evt === 'connected' && data.ID && data.ID.length > 5 ) {
               // connected successfully
-              console.log( 'connected' )
               debug( data )
               _ID = data.ID
+
+              ee.emit( 'connect' )
+              ee.emit( 'connected' )
+              console.log( 'connected' )
+
               poll()
             } else {
               debug( 'unknown connect response' )

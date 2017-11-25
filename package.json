@@ -12,7 +12,7 @@
     "build:source": "browserify -s kiite --bare --no-bf -t [ babelify --presets [ env ] ] src/index.js -o dist/kiite.js",
     "pass": "passlint dist/*.js",
     "lint": "spacestandard --fix src/**/*.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test/test.js | faucet"
   },
   "keywords": [
     "kiite"
@@ -40,6 +40,7 @@
     "faucet": "0.0.1",
     "object-assign": "~4.1.1",
     "passlint": "0.0.13",
+    "pinkyjs": "0.1.6",
     "spacestandard": "0.0.6",
     "tape": "~4.8.0",
     "uglify-js": "~3.1.10"

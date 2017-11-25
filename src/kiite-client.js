@@ -114,7 +114,7 @@ module.exports = function connect ( _params ) {
     debug( 'disconnecting' )
     req(
       params,
-      function ( err, res, body ) {
+      function ( err, res, body ) { // eslint-disable-line handle-callback-err
         /* ignore */
       }
     )

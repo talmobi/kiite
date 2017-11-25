@@ -1,3 +1,6 @@
+var fs = require( 'fs' )
+var path = require( 'path' )
+
 var http = require( 'http' )
 
 var kiite = require( '../dist/kiite.min.js' )
@@ -11,10 +14,16 @@ var io = kiite( server )
 
 var names = {}
 
-console.log( io )
+app.use( '/kiite.min.js', function ( req, res ) {
+  res.sendFile( path.join( __dirname, '../dist/kiite.min.js' ) )
+} )
+
+app.use( '/browser-client.js', function ( req, res ) {
+  res.sendFile( path.join( __dirname, 'browser-client.js' ) )
+} )
 
 app.use( function ( req, res ) {
-  res.send( 'express' )
+  res.sendFile( path.join( __dirname, 'index.html' ) )
 } )
 
 process.stdin.on( 'data', function ( chunk ) {
@@ -70,7 +79,7 @@ io.on( 'connection', function ( socket ) {
             if ( toSocket ) {
               var msg = (
                 '*' + from + '*: ' +
-                text.slice( text.indexOf( toName ) + toName.length )
+                text.slice( text.indexOf( toName ) + toName.length + 1 )
               )
               toSocket.emit( 'chat-message', msg )
             } else {

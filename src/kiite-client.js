@@ -6,6 +6,10 @@ function debug () {
   // console.log.apply( this, arguments )
 }
 
+function verbose () {
+  // console.log.apply( this, arguments )
+}
+
 module.exports = function connect ( _params ) {
   _params = _params || {}
 
@@ -166,9 +170,17 @@ module.exports = function connect ( _params ) {
       function ( err, res, body ) {
         if ( err ) {
           // try to connect soon
-          console.log( 'poll error, trying again in 1 sec' )
+          verbose( 'poll error, trying again in 1 sec' )
+
+          ee.emit( 'disconnect' )
+          ee.emit( 'disconnected' )
+          verbose( 'disconnected by server' )
+
+          // kill the _ID ( will reconnect )
+          _ID = undefined
+
           setTimeout( function () {
-            poll()
+            reconnect()
           }, 1000 )
         } else {
           if ( res.status === 200 ) {
@@ -199,7 +211,7 @@ module.exports = function connect ( _params ) {
               case 444: // disconnected by server
                 ee.emit( 'disconnect' )
                 ee.emit( 'disconnected' )
-                console.log( 'disconnected by server' )
+                verbose( 'disconnected by server' )
                 break
 
               case 404:
@@ -219,7 +231,30 @@ module.exports = function connect ( _params ) {
     )
   }
 
+  var _reconnectionTimeout = 1500
+  function updateReconnectionTimeout () {
+    _reconnectionTimeout += 150
+
+    var maxTimeout = 2000
+    var hidden = false
+
+    if ( typeof document === 'object' ) {
+      hidden = !!( document.hidden || document.msHidden || document.webkitHidden )
+    }
+
+    if ( hidden ) {
+      maxTimeout = 5000
+    }
+
+    if ( _reconnectionTimeout > maxTimeout ) {
+      _reconnectionTimeout = maxTimeout
+    }
+  }
+
   function reconnect () {
+    // kill the _ID ( will reconnect )
+    _ID = undefined
+
     if ( _closed ) return
 
     var params = cpy( _params )
@@ -232,10 +267,13 @@ module.exports = function connect ( _params ) {
       function ( err, res, body ) {
         if ( err ) {
           // connection error, try again in 1 sec
-          console.log( 'connection error, trying again in 1 sec' )
+          verbose( 'connection error, trying again in 1 sec' )
+
+          updateReconnectionTimeout()
+
           setTimeout( function () {
             reconnect()
-          }, 1000 )
+          }, _reconnectionTimeout )
         } else {
           if ( res.status === 200 ) {
             var data = JSON.parse( body )
@@ -246,7 +284,7 @@ module.exports = function connect ( _params ) {
 
               ee.emit( 'connect' )
               ee.emit( 'connected' )
-              console.log( 'connected' )
+              verbose( 'connected' )
 
               poll()
             } else {

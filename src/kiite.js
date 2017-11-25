@@ -160,7 +160,7 @@ module.exports = function ( server ) {
 
         switch ( data.evt ) {
           case 'disconnect':
-            console.log( 'disconnect evt ' )
+            debug( 'disconnect evt ' )
             updateDCTimeout( client, 1 )
             break
 

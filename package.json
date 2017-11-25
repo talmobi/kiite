@@ -1,10 +1,10 @@
 {
   "name": "kiite",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "super basic longpolling sockets",
-  "main": "dist/kiite.js",
+  "main": "dist/kiite.min.js",
   "files": [
-    "dist/kiite.js"
+    "dist/kiite.min.js"
   ],
   "scripts": {
     "build": "npm run build:source && npm run uglify && npm run pass",

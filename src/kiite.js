@@ -159,6 +159,11 @@ module.exports = function ( server ) {
         client.last_message_time = Date.now()
 
         switch ( data.evt ) {
+          case 'disconnect':
+            console.log( 'disconnect evt ' )
+            updateDCTimeout( client, 1 )
+            break
+
           case 'longpoll':
             if ( client.longpollResponse ) {
               throw new Error( 'duplicate longpolls received from the same client' )

@@ -41,6 +41,10 @@ server.listen( 3000, function () {
 
 io.on( 'connection', function ( socket ) {
   console.log( 'NEW CLIENT CONNECTION [ ' + socket.ID + ' ]' )
+
+  console.log( 'io.clientsConnected: ' + io.clientsConnected )
+  console.log( 'Object.keys( io.clients ).length: ' + ( Object.keys( io.clients ) ).length )
+
   socket.broadcast( 'chat-message', ' >> ' + ( socket.ID ) + ' joined.' )
   // console.log( socket )
   socket.on( 'text', function ( text ) {
@@ -110,6 +114,9 @@ io.on( 'connection', function ( socket ) {
   } )
 
   socket.on( 'disconnect', function () {
+    console.log( 'io.clientsConnected: ' + io.clientsConnected )
+    console.log( 'Object.keys( io.clients ).length: ' + ( Object.keys( io.clients ) ).length )
+
     var name = socket.name
     socket.broadcast( 'chat-message', ' << ' + ( name || socket.ID ) + ' left.' )
     if ( name ) {

@@ -113,6 +113,16 @@ test( 'chat messages', function ( t ) {
 
                   // check server
                   text = serverBuffer.join( '\n' )
+
+                  t.ok( text.indexOf( 'io.clientsConnected: 1' ) > 0 )
+                  t.ok( text.indexOf( 'Object.keys( io.clients ).length: 1' ) > 0 )
+
+                  t.ok( text.indexOf( 'io.clientsConnected: 2' ) > 0 )
+                  t.ok( text.indexOf( 'Object.keys( io.clients ).length: 2' ) > 0 )
+
+                  t.ok( text.indexOf( 'io.clientsConnected: 3' ) > 0 )
+                  t.ok( text.indexOf( 'Object.keys( io.clients ).length: 3' ) > 0 )
+
                   t.ok( text.indexOf( 'CLIENT MESSAGE: im clive' ) > 0 )
                   t.ok( text.indexOf( 'CLIENT MESSAGE: im dave' ) > 0 )
                   t.ok( text.indexOf( 'CLIENT MESSAGE: the end.' ) > 0 )

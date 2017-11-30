@@ -22,6 +22,8 @@ module.exports = function ( server ) {
     clients: {}
   }
 
+  var _clientsConnected = 0
+
   function emitAll ( evt, data, exceptID ) {
     debug( 'emitting all' )
     var IDs = Object.keys( api.clients )
@@ -243,6 +245,8 @@ module.exports = function ( server ) {
             request: req
           }
 
+          api.clientsConnected = ++_clientsConnected
+
           ee.emit( 'connect', socketApi )
           ee.emit( 'connection', socketApi )
         } else {
@@ -318,8 +322,11 @@ module.exports = function ( server ) {
 
       clearTimeout( client.longpollResponseTimeout )
       debug( ' >>> client disconnected: ' + client.ID )
-      client.socket.emit( 'disconnect' )
+
+      api.clientsConnected = --_clientsConnected
       delete api.clients[ client.ID ]
+
+      client.socket.emit( 'disconnect' )
     }, ms || ( DC_TIMEOUT ) )
   }
 

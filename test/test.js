@@ -36,7 +36,7 @@ pinky.createPage({
 
   _page = page
 
-  page.open( 'http://localhost:3000', function ( err ) {
+  page.open( 'http://localhost:3456', function ( err ) {
     if ( err ) throw err
     console.log( 'page opened' )
   } )

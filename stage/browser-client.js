@@ -1,6 +1,6 @@
 var kiite = window.kiite
 
-var io = kiite.connect( { port: 3000 } )
+var io = kiite.connect( { port: 3456 } )
 
 var buffer = ''
 

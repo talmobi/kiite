@@ -79,14 +79,18 @@ module.exports = function connect ( _params ) {
   }
 
   if ( typeof window === 'object' ) {
-    var loc
+    var loc = {}
 
     if ( typeof window.location === 'object' ) {
       loc = window.location
     }
 
+    var port = 80
+
+    if ( loc.protocol && loc.protocol.indexOf( 'https' ) >= 0 ) port = 443
+
     _params.host = _params.host || loc.hostname || 'localhost'
-    _params.port = _params.port || loc.port || 80
+    _params.port = _params.port || loc.port || port
   }
 
   // the root/main kiite endpoint -- all messages goes through here ( POST )

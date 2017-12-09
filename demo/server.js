@@ -23,6 +23,7 @@ io.on( 'connection', function ( socket ) {
   socket.broadcast( 'message', '[SERVER]: ' + name + ' joined.' )
 
   socket.on( 'message', function ( message ) {
+    console.log( name + ': ' + message )
     io.emit( 'message', name + ': ' + message )
   } )
 

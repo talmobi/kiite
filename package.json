@@ -1,6 +1,6 @@
 {
   "name": "kiite",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "super basic longpolling sockets",
   "main": "dist/kiite.min.js",
   "files": [

@@ -1,0 +1,25 @@
+<body>
+  <h2>Kiite client</h2>
+  <input type="text" id="input">
+  <ul id="list"></ul>
+
+  <script src="kiite.min.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    var io = window.kiite.connect( { port: 9090 } )
+
+    io.on( 'message', function ( text ) {
+      var el = document.createElement( 'li' )
+      el.innerHTML = text.trim()
+      list.appendChild( el )
+    } )
+
+    input.focus()
+    input.onkeyup = function ( evt ) {
+      if ( evt.keyCode == 13 ) {
+        io.emit( 'message', input.value )
+        input.value = ''
+      }
+    }
+  </script>
+</body>
+</html>

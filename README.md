@@ -69,15 +69,15 @@ Small, quick, and easy sockets/longpolling for simple needs with no external dep
 ## Why
 Other rich solutions can be too bulky to justify their use for very simple needs with long downloads, install times, rebuilds, and may have cross platform inconsistencies.
 
-# How
+## How
 Basic HTTP longpolling.
 
-# Alternatives
+## Alternatives
 [socket.io](https://github.com/socketio/socket.io)
 
 [socket.io-client](https://github.com/socketio/socket.io-client)
 
-# Test
+## Test
 ```bash
 npm test
 ```

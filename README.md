@@ -1,8 +1,12 @@
-#  聞いて kiite - simple long polling server and client
+[![npm](https://img.shields.io/npm/v/kiite.svg?maxAge=3600&style=flat-square)](https://www.npmjs.com/package/kiite)
+[![npm](https://img.shields.io/npm/l/kiite.svg?maxAge=3600&style=flat-square)](https://github.com/talmobi/kiite/blob/master/LICENSE)
 
-## Simple to use
+#  聞いて kiite 📞
+simple long polling server and client
 
-### Server
+## Easy to use
+
+#### Server
 ```js
 var http = require( 'http' )
 var server = http.createServer()
@@ -32,8 +36,8 @@ server.listen( 9090, function () {
 } )
 ```
 
-### Client
-```js
+#### Client
+```html
 <body>
   <h2>Kiite client</h2>
   <input type="text" id="input">
@@ -59,22 +63,21 @@ server.listen( 9090, function () {
 </body>
 ```
 
-# About
-Super basic longpolling sockets with essentially no dependencies..
+## About
+Small, quick, and easy sockets/longpolling for simple needs with no external dependencies, binaries or GYP rebuilds.
 
-# Why
-Lightweight, quick and basic longpolling for simple applications.
+## Why
+Other rich solutions can be too bulky to justify their use for very simple needs with long downloads, install times, rebuilds, and may have cross platform inconsistencies.
 
 # How
-Basic longpolling.
+Basic HTTP longpolling.
 
 # Alternatives
 [socket.io](https://github.com/socketio/socket.io)
+
 [socket.io-client](https://github.com/socketio/socket.io-client)
 
 # Test
 ```bash
 npm test
 ```
-
-

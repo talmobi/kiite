@@ -9,6 +9,10 @@ function debug () {
 }
 
 module.exports = function ( server ) {
+  // load nodejs deps dynamically when needed
+  var fs = require( 'fs' )
+  var path = require( 'path' )
+
   attach( server )
 
   var ee = createEventEmitter()
@@ -65,29 +69,41 @@ module.exports = function ( server ) {
       throw new Error( msg )
     }
 
-    var url = '/kiite.io'
+    var KIITE_ID = '/kiite.io'
     var listeners = server.listeners( 'request' ).slice( 0 )
     server.removeAllListeners( 'request' )
     server.on( 'request', function ( req, res ) {
-      if ( req.url.indexOf( url ) === 0 ) {
-        // handle cors and preflights
-        // ref: https://gist.github.com/nilcolor/816580
+      // serve client script on these paths for ease of use
+      if (
+          req.url.indexOf( '/kiite.js' ) === 0 ||
+          req.url.indexOf( '/kiite.min.js' ) === 0
+      ) {
         if ( req.method === 'OPTIONS' ) {
-          var headers = {}
-          headers[ 'Access-Control-Allow-Origin' ] = '*'
-          headers[ 'Access-Control-Allow-Methods' ] = 'POST, GET, PUT, DELETE, OPTIONS'
-          headers[ 'Access-Control-Allow-Credentials' ] = false
-          headers[ 'Access-Control-Max-Age' ] = '86400' // 24 hours
-          headers[ 'Access-Control-Allow-Headers' ] = 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept'
-          res.writeHead( 200, headers )
-          res.end()
+          handleOptions( req, res )
         } else {
           res.setHeader( 'Access-Control-Allow-Origin', '*' )
-          handleRequest( req, res )
+
+          fs.readFile( __filename, function ( err, data ) {
+            res.statusCode = 200
+            res.setHeader( 'Content-Type', 'text/html' )
+            res.setHeader( 'Content-Length', data.length )
+            res.write( data )
+            res.end()
+          } )
         }
       } else {
-        for ( var i = 0; i < listeners.length; ++i ) {
-          listeners[ i ].call( server, req, res )
+        if ( req.url.indexOf( KIITE_ID ) === 0 ) {
+          if ( req.method === 'OPTIONS' ) {
+            handleOptions( req, res )
+          } else {
+            res.setHeader( 'Access-Control-Allow-Origin', '*' )
+            handleRequest( req, res )
+          }
+        } else {
+          // pass through to underlying listeners
+          for ( var i = 0; i < listeners.length; ++i ) {
+            listeners[ i ].call( server, req, res )
+          }
         }
       }
     } )

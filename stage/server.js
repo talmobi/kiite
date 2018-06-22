@@ -14,9 +14,9 @@ var io = kiite( server )
 
 var names = {}
 
-app.use( '/kiite.min.js', function ( req, res ) {
-  res.sendFile( path.join( __dirname, '../dist/kiite.min.js' ) )
-} )
+// app.use( '/kiite.min.js', function ( req, res ) {
+//   res.sendFile( path.join( __dirname, '../dist/kiite.min.js' ) )
+// } )
 
 app.use( '/browser-client.js', function ( req, res ) {
   res.sendFile( path.join( __dirname, 'browser-client.js' ) )

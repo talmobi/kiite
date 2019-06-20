@@ -67,11 +67,12 @@ function killAll () {
 
 process.on( 'exit', killAll )
 
-spawnServer()
-spawnDave()
-spawnClive()
 
 test( 'chat messages', function ( t ) {
+  spawnServer()
+  spawnDave()
+  spawnClive()
+
   setTimeout( function () {
     server.stdin.write( 'hello everyone' )
     t.pass( 'server: hello everyone' )

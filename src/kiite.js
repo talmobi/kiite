@@ -186,7 +186,7 @@ module.exports = function ( server ) {
         } )
 
         // existing client
-        debug( 'old client [ ' + ID + ' ], evt: ' + data.evt )
+        debug( 'existing client [ ' + ID + ' ], evt: ' + data.evt )
         client.last_message_time = Date.now()
 
         switch ( data.evt ) {

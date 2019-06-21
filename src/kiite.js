@@ -291,6 +291,7 @@ module.exports = function server ( server ) {
           ee.emit( 'connect', socketApi )
           ee.emit( 'connection', socketApi )
         } else {
+          // server might have restarted and forgot old users
           // unknown intentions -- unknown user
           debug( '404 unknown user' )
           debug( body )

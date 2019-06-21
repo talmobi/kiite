@@ -152,6 +152,14 @@ module.exports = function server ( server ) {
       var ip = req.connection.remoteAddress
       var ua = req.headers[ 'user-agent' ]
 
+      // replace localhost ip's by default
+      // for x-forwarded-for if available
+      if ( ip.indexOf( '127.0.0.1' ) >= 0 ) {
+        if ( req.headers[ 'x-forwarded-for' ] ) {
+          ip = req.headers[ 'x-forwarded-for' ]
+        }
+      }
+
       var ID = data.ID
 
       debug( data )

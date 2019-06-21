@@ -137,9 +137,13 @@ module.exports = function connect ( _params ) {
     params.data = {
       ID: _ID,
       evt: 'messages',
-      messages: _buffer
+      messages: _buffer.slice()
     }
-    _buffer = []
+    // _buffer = []
+
+    // remember buffer length that was sent so we can
+    // clear the sent data after it has been sent.
+    const sentLength = _buffer.length
 
     debug( 'flushing' )
     req(
@@ -147,14 +151,23 @@ module.exports = function connect ( _params ) {
       function ( err, res, body ) {
         if ( err ) {
           // let longpolling handle recovery
-          debug( 'emit error' )
+          debug( 'emit error (flush)' )
+
+          reconnect()
         } else {
           if ( res.status === 200 ) {
             // message sent OK
-            debug( 'emit success' )
+            debug( 'emit success (flush)' )
+
+            debug( _buffer )
+
+            // cut off the sent data
+            _buffer = _buffer.slice( sentLength )
           } else {
             // let longpolling handle recovery
-            debug( 'res.status error: ' + res.status )
+            debug( 'res.status error (flush): ' + res.status )
+
+            reconnect()
           }
         }
       }
@@ -183,12 +196,7 @@ module.exports = function connect ( _params ) {
           ee.emit( 'disconnected' )
           verbose( 'disconnected by server' )
 
-          // kill the _ID ( will reconnect )
-          _ID = undefined
-
-          setTimeout( function () {
-            reconnect()
-          }, 1000 )
+          reconnect()
         } else {
           if ( res.status === 200 ) {
             var data = JSON.parse( body )
@@ -222,16 +230,13 @@ module.exports = function connect ( _params ) {
                 break
 
               case 404:
-                // console.log( 'unkown user or unknown event' )
+                // server might have restarted and forgot old users
+                debug( 'unkown user or unknown event' )
                 break
             }
 
-            // kill the _ID ( will reconnect )
-            _ID = undefined
-
-            setTimeout( function () {
-              reconnect() // reconnect
-            }, 1000 )
+            // keep reconnecting
+            reconnect()
           }
         }
       }

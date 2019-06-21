@@ -280,7 +280,10 @@ module.exports = function server ( server ) {
               // send to all except this socket
               emitAll( evt, data, client.ID )
             },
-            request: req
+            request: req,
+            close: function () {
+              updateDCTimeout( client, 0 )
+            }
           }
 
           api.clientsConnected = ++_clientsConnected

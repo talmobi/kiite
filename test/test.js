@@ -22,25 +22,29 @@ var serverBuffer = []
 var daveBuffer = []
 var cliveBuffer = []
 
-var pinky = pinkyjs.createSpawn()
-pinky.createPage({
-  viewportSize: {
-    width: 720,
-    height: 1280
-  },
-  settings: {
-    loadImages: false
-  }
-}, function ( err, page ) {
-  if ( err ) throw err
 
-  _page = page
-
-  page.open( 'http://localhost:3456', function ( err ) {
+var pinky
+function startPinky () {
+  pinky = pinkyjs.createSpawn()
+  pinky.createPage({
+    viewportSize: {
+      width: 720,
+      height: 1280
+    },
+    settings: {
+      loadImages: false
+    }
+  }, function ( err, page ) {
     if ( err ) throw err
-    console.log( 'page opened' )
+
+    _page = page
+
+    page.open( 'http://localhost:3456', function ( err ) {
+      if ( err ) throw err
+      console.log( 'page opened' )
+    } )
   } )
-} )
+}
 
 function checkPinky ( callback ) {
   _page.eval(
@@ -67,8 +71,9 @@ function killAll () {
 
 process.on( 'exit', killAll )
 
-
 test( 'chat messages', function ( t ) {
+  startPinky()
+
   spawnServer()
   spawnDave()
   spawnClive()

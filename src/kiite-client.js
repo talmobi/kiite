@@ -2,14 +2,6 @@ var req = require( 'dasu' ).req
 
 var createEventEmitter = require( './ee.js' )
 
-function debug () {
-  // console.log.apply( this, arguments )
-}
-
-function verbose () {
-  // console.log.apply( this, arguments )
-}
-
 module.exports = function connect ( _params ) {
   _params = _params || {}
 
@@ -45,6 +37,16 @@ module.exports = function connect ( _params ) {
       _closed = true
       disconnect()
     }
+  }
+
+  function debug () {
+    if ( !api._debug ) return
+    console.log.apply( this, arguments )
+  }
+
+  function verbose () {
+    if ( !api._verbose ) return
+    console.log.apply( this, arguments )
   }
 
   function scheduleFlush () {

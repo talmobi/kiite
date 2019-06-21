@@ -4,11 +4,7 @@ var cuid = require( 'cuid' )
 var LONGPOLL_TIMEOUT = ( 1000 * 25 )
 var DC_TIMEOUT = ( 1000 * 30 )
 
-function debug () {
-  // console.log.apply( this, arguments )
-}
-
-module.exports = function ( server ) {
+module.exports = function server ( server ) {
   // load nodejs deps dynamically when needed
   var fs = require( 'fs' )
   var path = require( 'path' )
@@ -24,6 +20,11 @@ module.exports = function ( server ) {
       emitAll( evt, data )
     },
     clients: {}
+  }
+
+  function debug () {
+    if ( !api._debug ) return
+    console.log.apply( this, arguments )
   }
 
   var _clientsConnected = 0

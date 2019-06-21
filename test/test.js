@@ -225,3 +225,87 @@ function spawnClive () {
     console.log( text )
   } )
 }
+
+test( 'reset', function ( t ) {
+  setTimeout( function () {
+    spawnServer()
+    spawnClive()
+
+    startPinky()
+
+    setTimeout( function () {
+      server.stdin.write( 'hello everyone' )
+      t.pass( 'server: hello everyone' )
+
+      setTimeout( function () {
+        clive.stdin.write( '/name clive\n' )
+        t.pass( '/name clive' )
+
+        setTimeout( function () {
+          clive.stdin.write( 'im clive\n' )
+          t.pass( 'clive: im clive' )
+
+          setTimeout( function () {
+            server.stdin.write( 'COMMAND:reset' )
+            t.pass( 'server: reset' )
+
+            setTimeout( function () {
+              clive.stdin.write( 'one one one\n' )
+              t.pass( 'clive: one one one' )
+
+              setTimeout( function () {
+                server.stdin.write( 'COMMAND:restore' )
+                t.pass( 'server: restore' )
+
+                setTimeout( function () {
+                  clive.stdin.write( 'two two two\n' )
+                  t.pass( 'clive: two two two' )
+
+                  setTimeout( function () {
+                    t.pass( 'checking pinkyjs ( headless browser )' )
+                    checkPinky( function ( text ) {
+                      killAll()
+                      pinky.exit()
+
+                      // check pinkyjs
+                      t.ok( text.indexOf( 'hello everyone' ) > 0, 'pinky hello ok' )
+                      t.ok( text.indexOf( 'clive: im clive' ) > 0, 'pinky im clive' )
+
+                      t.ok( text.indexOf( 'clive: one one one' ) > 0, 'pinky clive: one one one' )
+
+                      t.ok( text.indexOf( 'clive: two two two' ) > 0, 'pinky clive: two two two' )
+
+                      // check server
+                      text = serverBuffer.join( '\n' )
+
+                      t.ok( text.indexOf( 'io.clientsConnected: 1' ) > 0, 'server clientsConnected' )
+                      t.ok( text.indexOf( 'Object.keys( io.clients ).length: 1' ) > 0, 'server io.clients' )
+
+                      // t.ok( text.indexOf( 'io.clientsConnected: 0' ) > 0 )
+                      // t.ok( text.indexOf( 'Object.keys( io.clients ).length: 0' ) > 0 )
+
+                      // t.ok( text.indexOf( 'io.clientsConnected: 3' ) > 0 )
+                      // t.ok( text.indexOf( 'Object.keys( io.clients ).length: 3' ) > 0 )
+
+                      t.ok( text.indexOf( 'CLIENT MESSAGE: im clive' ) > 0, 'server im clive' )
+                      t.ok( text.indexOf( 'CLIENT MESSAGE: one one one' ) > 0, 'server one one one' )
+                      t.ok( text.indexOf( 'CLIENT MESSAGE: two two two' ) > 0, 'server two two two' )
+
+                      // check clive
+                      text = cliveBuffer.join( '\n' )
+                      t.ok( text.indexOf( 'hello everyone' ) > 0, 'clive: hello' )
+                      t.ok( text.indexOf( 'clive: im clive' ) === -1, 'clive: im clive' ) // can't see own messages
+
+                      t.pass( 'exiting...' )
+                      t.end()
+                    } )
+                  }, 3000 )
+                }, 1000 )
+              }, 1000 )
+            }, 1000 )
+          }, 1000 )
+        }, 1000 )
+      }, 1000 )
+    }, 5000 )
+  }, 2000 )
+} )

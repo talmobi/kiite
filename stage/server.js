@@ -26,9 +26,24 @@ app.use( function ( req, res ) {
   res.sendFile( path.join( __dirname, 'index.html' ) )
 } )
 
+var _previousClients = undefined
+
 process.stdin.on( 'data', function ( chunk ) {
   // console.log( 'stdin chunk: ' + chunk )
   var text = chunk.toString( 'utf8' )
+
+  switch ( text ) {
+    case 'COMMAND:reset':
+      // reset clients
+      _previousClients = io.clients
+      io.clients = {}
+      return
+
+    case 'COMMAND:restore':
+      // reset clients
+      io.clients = _previousClients
+      return
+  }
 
   io.emit( 'chat-message',
     '[ SERVER ]: ' + text
@@ -99,6 +114,11 @@ io.on( 'connection', function ( socket ) {
             )
             socket.emit( 'chat-message', msg )
           }
+        break
+
+        case '/disconnect':
+          socket.emit = function () {}
+          socket.close()
         break
 
         default:

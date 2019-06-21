@@ -17,6 +17,7 @@ module.exports = function connect ( _params ) {
   var _flushTime = Date.now()
 
   var _closed = false
+  var _alreadyReconnecting = false
 
   // our user id given by the server
   var _ID
@@ -258,6 +259,9 @@ module.exports = function connect ( _params ) {
   }
 
   function reconnect () {
+    if ( _alreadyReconnecting ) return
+    _alreadyReconnecting = true
+
     // kill the _ID ( will reconnect )
     _ID = undefined
 
@@ -268,39 +272,44 @@ module.exports = function connect ( _params ) {
     params.data = { evt: 'connect' }
 
     debug( 'connecting' )
-    req(
-      params,
-      function ( err, res, body ) {
-        if ( err ) {
-          // connection error, try again in 1 sec
-          verbose( 'connection error, trying again in 1 sec' )
 
-          updateReconnectionTimeout()
+    setTimeout( function () {
+      req(
+        params,
+        function ( err, res, body ) {
+          _alreadyReconnecting = false
 
-          setTimeout( function () {
-            reconnect()
-          }, _reconnectionTimeout )
-        } else {
-          if ( res.status === 200 ) {
-            var data = JSON.parse( body )
-            if ( data.evt === 'connected' && data.ID && data.ID.length > 5 ) {
-              // connected successfully
-              debug( data )
-              _ID = data.ID
+          if ( err ) {
+            // connection error, try again in 1 sec
+            verbose( 'connection error, trying again in 1 sec' )
 
-              ee.emit( 'connect' )
-              ee.emit( 'connected' )
-              verbose( 'connected' )
+            updateReconnectionTimeout()
 
-              poll()
-            } else {
-              debug( 'unknown connect response' )
-              debug( body )
+            setTimeout( function () {
+              reconnect()
+            }, _reconnectionTimeout )
+          } else {
+            if ( res.status === 200 ) {
+              var data = JSON.parse( body )
+              if ( data.evt === 'connected' && data.ID && data.ID.length > 5 ) {
+                // connected successfully
+                debug( data )
+                _ID = data.ID
+
+                ee.emit( 'connect' )
+                ee.emit( 'connected' )
+                verbose( 'connected' )
+
+                poll()
+              } else {
+                debug( 'unknown connect response' )
+                debug( body )
+              }
             }
           }
         }
-      }
-    )
+      )
+    }, 1000 )
   }
 
   return api

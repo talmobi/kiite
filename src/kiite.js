@@ -217,7 +217,8 @@ module.exports = function ( server ) {
               sendMessage(
                 client.longpollResponse,
                 {
-                  evt: 'renew'
+                  evt: 'renew',
+                  uprd: _user_polling_renew_delay,
                 }
               )
               delete client.longpollResponse
@@ -260,7 +261,9 @@ module.exports = function ( server ) {
 
           sendMessage( res, {
             evt: 'connected',
-            ID: ID
+            ID: ID,
+            uprd: _user_polling_renew_delay,
+            LONGPOLL_TIMEOUT: LONGPOLL_TIMEOUT
           } )
 
           var socket = createEventEmitter()
@@ -333,7 +336,9 @@ module.exports = function ( server ) {
           client.longpollResponse,
           {
             evt: 'messages',
-            messages: buffer
+            messages: buffer,
+            uprd: _user_polling_renew_delay,
+            LONGPOLL_TIMEOUT: LONGPOLL_TIMEOUT
           }
         )
         delete client.longpollResponse

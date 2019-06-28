@@ -183,6 +183,14 @@ module.exports = function connect ( _params ) {
       evt: 'longpoll'
     }
 
+    // this is set to true when the longpoll has been handled by the
+    // _longpoll_timeout already; this should not happen usually since the
+    // _longpoll_timeout should usually only trigger when we are highly certain
+    // that a response from the server is never coming or has been lost due to
+    // other cirumstances ( e.g. users computer in sleep mode when response is
+    // sent from server )
+    var _ignore_response = false
+
     // TODO add long poll response timeout
     // sometimes response disappears
     // (eg user client computer goes into sleep mode)
@@ -200,6 +208,8 @@ module.exports = function connect ( _params ) {
     req(
       params,
       function ( err, res, body ) {
+        if ( _ignore_response ) return // handled already
+
         if ( err ) {
           // try to connect soon
           verbose( 'poll error, trying again in 1 sec' )

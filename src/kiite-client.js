@@ -288,8 +288,9 @@ module.exports = function connect ( _params ) {
       hidden = !!( document.hidden || document.msHidden || document.webkitHidden )
     }
 
+    // slow polling if page is hidden
     if ( hidden ) {
-      maxTimeout = 5000
+      maxTimeout = 3000
     }
 
     if ( _reconnectionTimeout > maxTimeout ) {

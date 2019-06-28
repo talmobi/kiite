@@ -328,6 +328,11 @@ module.exports = function connect ( _params ) {
               // reset reconnection timeout after a successful connection
               _reconnectionTimeout = 1500
 
+              // TODO helper function to parse common
+              // response data such as dynamic _user_polling_renew_delay
+              // requested by the server
+              // parseResponseData( data )
+
               // connected successfully
               debug( data )
               _ID = data.ID

@@ -2,6 +2,8 @@ var req = require( 'dasu' ).req
 
 var createEventEmitter = require( './ee.js' )
 
+var LONGPOLL_TIMEOUT_COEFFICIENT = 1.30 // 30%
+
 function debug () {
   // console.log.apply( this, arguments )
 }
@@ -12,6 +14,19 @@ function verbose () {
 
 module.exports = function connect ( _params ) {
   _params = _params || {}
+
+  // this timeout is triggered only on special circumstances
+  // when e.g. users computer goes to sleep and the response
+  // from the server to the longpoll request will disappear
+  // ( response from server is sent but never received by user code )
+  // ( due to the computer being closed/asleep )
+  // this leads to the problem that the client never reconnect
+  // to the server once the users computer wakes up and becomes
+  // responsive again ( because without this timeout the next longpoll is only
+  // sent after a response from the server is received to the current
+  // longpolling request )
+  var _longpoll_timeout_time = ( 1000 * 25 * LONGPOLL_TIMEOUT_COEFFICIENT )
+  var _longpoll_timeout = undefined
 
   var ee = createEventEmitter()
 
@@ -167,6 +182,19 @@ module.exports = function connect ( _params ) {
       ID: _ID,
       evt: 'longpoll'
     }
+
+    // TODO add long poll response timeout
+    // sometimes response disappears
+    // (eg user client computer goes into sleep mode)
+    // and is never able to reconnect because it's indefinitely
+    // waiting for a longpolling response that never comes
+    _longpoll_timeout = setTimeout( function longpoll_timeout () {
+      // usually happens when user computer is asleep when a response to the
+      // longpolling request is sent by the server
+      debug( 'longpolling timed out' )
+
+      reconnect()
+    }, _longpoll_timeout_time )
 
     debug( 'longpolling' )
     req(

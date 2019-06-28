@@ -325,6 +325,9 @@ module.exports = function connect ( _params ) {
           if ( res.status === 200 ) {
             var data = JSON.parse( body )
             if ( data.evt === 'connected' && data.ID && data.ID.length > 5 ) {
+              // reset reconnection timeout after a successful connection
+              _reconnectionTimeout = 1500
+
               // connected successfully
               debug( data )
               _ID = data.ID

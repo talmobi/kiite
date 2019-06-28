@@ -4,6 +4,11 @@ var cuid = require( 'cuid' )
 var LONGPOLL_TIMEOUT = ( 1000 * 25 )
 var DC_TIMEOUT = ( 1000 * 30 )
 
+// tell clients to delay their polling frequency
+// dynamically over time ( e.g. alleviate server congestion )
+// TODO currently unused
+var _user_polling_renew_delay = 0
+
 function debug () {
   // console.log.apply( this, arguments )
 }

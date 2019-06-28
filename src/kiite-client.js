@@ -230,6 +230,10 @@ module.exports = function connect ( _params ) {
 
             debug( 'longpoll evt: ' + data.evt )
 
+            if ( data.LONGPOLL_TIMEOUT ) {
+              _longpoll_timeout_time = data.LONGPOLL_TIMEOUT
+            }
+
             switch ( data.evt ) {
               case 'renew':
                 poll()
@@ -323,6 +327,10 @@ module.exports = function connect ( _params ) {
               // connected successfully
               debug( data )
               _ID = data.ID
+
+              if ( data.LONGPOLL_TIMEOUT ) {
+                _longpoll_timeout_time = data.LONGPOLL_TIMEOUT
+              }
 
               ee.emit( 'connect' )
               ee.emit( 'connected' )

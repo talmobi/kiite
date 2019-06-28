@@ -290,6 +290,7 @@ module.exports = function connect ( _params ) {
               ee.emit( 'connected' )
               verbose( 'connected' )
 
+              // start longpolling
               poll()
             } else {
               debug( 'unknown connect response' )

@@ -193,8 +193,12 @@ module.exports = function connect ( _params ) {
     _schedule_poll_timeout = setTimeout( poll, _user_polling_renew_delay )
   }
 
+  var _currently_polling = false
   function poll () {
     if ( _closed ) return
+
+    if ( _currently_polling ) return
+    _currently_polling = true
 
     var params = cpy( _params )
 
@@ -217,6 +221,8 @@ module.exports = function connect ( _params ) {
     // and is never able to reconnect because it's indefinitely
     // waiting for a longpolling response that never comes
     _longpoll_timeout = setTimeout( function longpoll_timeout () {
+      _currently_polling = false
+
       // usually happens when user computer is asleep when a response to the
       // longpolling request is sent by the server
       debug( 'longpolling timed out' )
@@ -238,8 +244,7 @@ module.exports = function connect ( _params ) {
           ee.emit( 'disconnected' )
           verbose( 'disconnected by server' )
 
-          // kill the _ID ( will reconnect )
-          _ID = undefined
+        _currently_polling = false
 
           setTimeout( function () {
             reconnect()

@@ -250,6 +250,10 @@ module.exports = function connect ( _params ) {
 
             debug( 'longpoll evt: ' + data.evt )
 
+            if ( data[ 'uprd' ] ) {
+              _user_polling_renew_delay = data[ 'uprd' ]
+            }
+
             if ( data.LONGPOLL_TIMEOUT ) {
               _longpoll_timeout_time = data.LONGPOLL_TIMEOUT
             }
@@ -352,6 +356,9 @@ module.exports = function connect ( _params ) {
               // response data such as dynamic _user_polling_renew_delay
               // requested by the server
               // parseResponseData( data )
+              if ( data[ 'uprd' ] ) {
+                _user_polling_renew_delay = data[ 'uprd' ]
+              }
 
               // connected successfully
               debug( data )

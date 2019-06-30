@@ -285,7 +285,7 @@ module.exports = function connect ( _params ) {
                 break
 
               case 404:
-                // console.log( 'unkown user or unknown event' )
+                verbose( 'unkown user or unknown event' )
                 break
             }
 

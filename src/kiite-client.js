@@ -221,6 +221,7 @@ module.exports = function connect ( _params ) {
     // and is never able to reconnect because it's indefinitely
     // waiting for a longpolling response that never comes
     _longpoll_timeout = setTimeout( function longpoll_timeout () {
+      _ignore_response = true
       _currently_polling = false
 
       // usually happens when user computer is asleep when a response to the

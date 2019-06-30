@@ -36,6 +36,10 @@ module.exports = function connect ( _params ) {
   var _longpoll_timeout_time = ( 1000 * 25 * LONGPOLL_TIMEOUT_COEFFICIENT )
   var _longpoll_timeout = undefined
 
+  // artificial dynamic delay before each longpoll requested by the server
+  // ( to dynamically help control congestion etc )
+  var _user_polling_renew_delay = 0 // default 0 milliseconds
+
   var ee = createEventEmitter()
 
   // message buffer
@@ -181,6 +185,14 @@ module.exports = function connect ( _params ) {
     )
   }
 
+  var _schedule_poll_timeout = undefined
+  function schedulePoll () {
+    debug( 'scheduling poll in: ' + _user_polling_renew_delay + ' ms' )
+
+    clearTimeout( _schedule_poll_timeout )
+    _schedule_poll_timeout = setTimeout( poll, _user_polling_renew_delay )
+  }
+
   function poll () {
     if ( _closed ) return
 
@@ -244,7 +256,7 @@ module.exports = function connect ( _params ) {
 
             switch ( data.evt ) {
               case 'renew':
-                poll()
+                schedulePoll()
                 break
 
               case 'messages':
@@ -252,11 +264,11 @@ module.exports = function connect ( _params ) {
                 data.messages.forEach( function ( payload ) {
                   ee.emit( payload.evt, payload.data )
                 } )
-                poll()
+                schedulePoll()
                 break
 
               default:
-                poll()
+                schedulePoll()
             }
           } else {
             debug( 'res.status error: ' + res.status )
@@ -354,7 +366,7 @@ module.exports = function connect ( _params ) {
               verbose( 'connected' )
 
               // start longpolling
-              poll()
+              schedulePoll()
             } else {
               debug( 'unknown connect response' )
               debug( body )

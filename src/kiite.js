@@ -352,6 +352,9 @@ module.exports = function ( server ) {
 
   function updateDCTimeout ( client, ms ) {
     clearTimeout( client.DCTimeout )
+
+    const timeoutTime = ( ms || DC_TIMEOUT ) + _user_polling_renew_delay
+
     client.DCTimeout = setTimeout( function () {
       if ( client.longpollResponse ) {
         // new longpoll received even after old is still active
@@ -368,7 +371,7 @@ module.exports = function ( server ) {
       delete api.clients[ client.ID ]
 
       client.socket.emit( 'disconnect' )
-    }, ms || ( DC_TIMEOUT ) )
+    }, timeoutTime )
   }
 
   return api

@@ -302,7 +302,7 @@ module.exports = function ( server ) {
           ee.emit( 'connection', socketApi )
         } else {
           // unknown intentions -- unknown user
-          debug( '404 unknown user' )
+          debug( '404 unknown user, unknown request data format (JSON error?)' )
           debug( body )
           res.statusCode = 404
           res.end()
@@ -311,7 +311,7 @@ module.exports = function ( server ) {
     } catch ( err ) {
       console.error( err.stack )
       // possibly failed to JSON.parse
-      debug( 'sending 400 Bad Request' )
+      debug( 'sending 400 Bad Request (JSON error?)' )
       res.statusCode = 400
       res.write( '400 Bad Request' )
       res.end()

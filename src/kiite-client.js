@@ -294,6 +294,11 @@ module.exports = function connect ( _params ) {
                 schedulePoll()
                 break
 
+              case 'duplicate':
+                debug( 'got duplicate, stopping this one.' )
+                // don't shcedule a new one on duplicates
+                break
+
               default:
                 schedulePoll()
             }

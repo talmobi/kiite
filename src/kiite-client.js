@@ -277,10 +277,6 @@ module.exports = function connect ( _params ) {
               _user_polling_renew_delay = data[ 'uprd' ]
             }
 
-            if ( data.LONGPOLL_TIMEOUT ) {
-              _longpoll_timeout_time = data.LONGPOLL_TIMEOUT
-            }
-
             switch ( data.evt ) {
               case 'renew':
                 schedulePoll()
@@ -405,10 +401,6 @@ module.exports = function connect ( _params ) {
               // connected successfully
               debug( data )
               _ID = data.ID
-
-              if ( data.LONGPOLL_TIMEOUT ) {
-                _longpoll_timeout_time = data.LONGPOLL_TIMEOUT
-              }
 
               ee.emit( 'connect' )
               ee.emit( 'connected' )

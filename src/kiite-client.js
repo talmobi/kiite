@@ -252,13 +252,8 @@ module.exports = function connect ( _params ) {
       function ( err, res, body ) {
         if ( _ignore_response ) return // handled already
 
-        if ( err ) {
-          // try to connect soon
-          verbose( 'poll error, trying again in 1 sec' )
-
-          ee.emit( 'disconnect' )
-          ee.emit( 'disconnected' )
-          verbose( 'disconnected by server' )
+        // remember to clear the timeout on success
+        clearTimeout( _longpoll_timeout )
 
         _currently_polling = false
 

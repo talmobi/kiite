@@ -360,22 +360,36 @@ module.exports = function connect ( _params ) {
 
     params.data = { evt: 'connect' }
 
+    function handleConnectError () {
+      // connection error, try again in 1 sec
+      verbose( 'connection error, trying again in 1 sec' )
+
+      updateReconnectionTimeout()
+
+      setTimeout( function () {
+        reconnect()
+      }, _reconnectionTimeout )
+    }
+
     debug( 'connecting' )
     req(
       params,
       function ( err, res, body ) {
         if ( err ) {
-          // connection error, try again in 1 sec
-          verbose( 'connection error, trying again in 1 sec' )
-
-          updateReconnectionTimeout()
-
-          setTimeout( function () {
-            reconnect()
-          }, _reconnectionTimeout )
+          handleConnectError()
         } else {
           if ( res.status === 200 ) {
-            var data = JSON.parse( body )
+
+            var data
+            try {
+              data = JSON.parse( body )
+            } catch ( err ) {
+              debug( 'kiite: failed to connect to server' )
+              debug( err )
+
+              return handleConnectError()
+            }
+
             if ( data.evt === 'connected' && data.ID && data.ID.length > 5 ) {
               // reset reconnection timeout after a successful connection
               _reconnectionTimeout = 1500

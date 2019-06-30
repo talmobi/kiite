@@ -5,11 +5,19 @@ var createEventEmitter = require( './ee.js' )
 var LONGPOLL_TIMEOUT_COEFFICIENT = 1.30 // 30%
 
 function debug () {
-  // console.log.apply( this, arguments )
+  if ( typeof window === 'object' && window[ '_debug_kiite' ] ) {
+    console.log.apply( this, arguments )
+  }
 }
 
 function verbose () {
-  // console.log.apply( this, arguments )
+  if (
+    typeof window === 'object' && (
+      window[ '_debug_kiite' ] || window[ '_verbose_kiite' ]
+    )
+  ) {
+    console.log.apply( this, arguments )
+  }
 }
 
 module.exports = function connect ( _params ) {

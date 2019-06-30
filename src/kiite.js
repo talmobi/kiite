@@ -10,7 +10,9 @@ var DC_TIMEOUT = ( 1000 * 30 )
 var _user_polling_renew_delay = 0
 
 function debug () {
-  // console.log.apply( this, arguments )
+  if ( process.env.DEBUG_KIITE ) {
+    console.log.apply( this, arguments )
+  }
 }
 
 module.exports = function ( server ) {

@@ -1,7 +1,7 @@
 var createEventEmitter = require( './ee.js' )
 var cuid = require( 'cuid' )
 
-var LONGPOLL_TIMEOUT = ( 1000 * 25 )
+var LONGPOLL_RENEW_INTERVAL = ( 1000 * 25 )
 var DC_TIMEOUT = ( 1000 * 30 )
 
 // tell clients to delay their polling frequency
@@ -229,8 +229,10 @@ module.exports = function ( server ) {
             client.longpollResponse = res
             client.longpollResponseTimeout = setTimeout( function () {
               debug( 'requesting renew longpoll' )
-              // longpoll timed out, tell the user to issue another longpoll
-              // res.send( 200 ).json( { evt: 'timeout' } ).end()
+              // we have been holding/delaying the longpoll response without any
+              // events for a long enough time, tell the user to issue another longpoll
+              // if we wait too long, (~45 seconds) the browser will automatically error out the
+              // request, we do not want that.
               sendMessage(
                 client.longpollResponse,
                 {
@@ -239,7 +241,7 @@ module.exports = function ( server ) {
                 }
               )
               delete client.longpollResponse
-            }, LONGPOLL_TIMEOUT )
+            }, LONGPOLL_RENEW_INTERVAL )
 
             flush( client )
             break
@@ -279,8 +281,7 @@ module.exports = function ( server ) {
           sendMessage( res, {
             evt: 'connected',
             ID: ID,
-            uprd: _user_polling_renew_delay,
-            LONGPOLL_TIMEOUT: LONGPOLL_TIMEOUT
+            uprd: _user_polling_renew_delay
           } )
 
           var socket = createEventEmitter()
@@ -354,8 +355,7 @@ module.exports = function ( server ) {
           {
             evt: 'messages',
             messages: buffer,
-            uprd: _user_polling_renew_delay,
-            LONGPOLL_TIMEOUT: LONGPOLL_TIMEOUT
+            uprd: _user_polling_renew_delay
           }
         )
         delete client.longpollResponse

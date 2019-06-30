@@ -1,4 +1,5 @@
 [![npm](https://img.shields.io/npm/v/kiite.svg?maxAge=3600&style=flat-square)](https://www.npmjs.com/package/kiite)
+[![npm](https://img.shields.io/npm/dm/kiite.svg?maxAge=3600&style=flat-square)](https://www.npmjs.com/package/kiite)
 [![npm](https://img.shields.io/npm/l/kiite.svg?maxAge=3600&style=flat-square)](https://github.com/talmobi/kiite/blob/master/LICENSE)
 
 #  聞いて kiite 📞

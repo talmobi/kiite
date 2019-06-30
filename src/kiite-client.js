@@ -230,6 +230,22 @@ module.exports = function connect ( _params ) {
       reconnect()
     }, _longpoll_timeout_time )
 
+    function handleLongpollError () {
+      // try to connect soon
+      verbose( 'poll error, trying again in 1 sec' )
+
+      ee.emit( 'disconnect' )
+      ee.emit( 'disconnected' )
+      verbose( 'disconnected by server' )
+
+      // kill the _ID ( will reconnect )
+      _ID = undefined
+
+      setTimeout( function () {
+        reconnect()
+      }, 1000 )
+    }
+
     debug( 'longpolling' )
     req(
       params,
@@ -246,12 +262,19 @@ module.exports = function connect ( _params ) {
 
         _currently_polling = false
 
-          setTimeout( function () {
-            reconnect()
-          }, 1000 )
+        if ( err ) {
+          handleLongpollError()
         } else {
           if ( res.status === 200 ) {
-            var data = JSON.parse( body )
+            var data
+            try {
+              data = JSON.parse( body )
+            } catch ( err ) {
+              debug( 'kiite: bad JSON response from server' )
+              debug( err )
+
+              return handleLongpollError()
+            }
 
             debug( 'longpoll evt: ' + data.evt )
 

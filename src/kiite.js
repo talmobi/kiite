@@ -219,7 +219,10 @@ module.exports = function ( server ) {
               debug( 'duplicate longpolls received from the same client' )
               // new longpoll received even after old is still active
               // -> delete and abort the old one
-              return res.send( 200 ).json( { evt: 'stop' } ).end()
+              return sendMessage(
+                res,
+                { evt: 'stop' }
+              )
             }
 
             clearTimeout( client.longpollResponseTimeout )

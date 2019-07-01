@@ -30,8 +30,10 @@ module.exports = function ( server, opts ) {
     longpoll_renew_interval: MAX_LONGPOLL_RENEW_INTERVAL
   }
 
-  opts = opts || {
-    user_delay: function user_delay ( numOfClients ) {
+  opts = opts || {}
+
+  if ( !opts.user_delay ) {
+    opts.user_delay = function user_delay ( numOfClients ) {
       if ( numOfClients < 20 ) return MIN_USER_POLLING_RENEW_DELAY
 
       const ms = (
@@ -41,9 +43,11 @@ module.exports = function ( server, opts ) {
       )
 
       return ms
-    },
+    }
+  }
 
-    renew_interval: function renew_interval ( numOfClients ) {
+  if ( !opts.renew_interval ) {
+    opts.renew_interval = function renew_interval ( numOfClients ) {
       if ( numOfClients < 20 ) return MAX_LONGPOLL_RENEW_INTERVAL
 
       const ms = (

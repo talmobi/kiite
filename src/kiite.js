@@ -1,13 +1,18 @@
 var createEventEmitter = require( './ee.js' )
 var cuid = require( 'cuid' )
 
-var LONGPOLL_RENEW_INTERVAL = ( 1000 * 25 )
-var DC_TIMEOUT = ( 1000 * 30 )
+// how long to hold/delay the users longpolling request
+// before responding
+var MAX_LONGPOLL_RENEW_INTERVAL = ( 1000 * 25 )
+var MIN_LONGPOLL_RENEW_INTERVAL = ( 1000 * 3 )
 
-// tell clients to delay their polling frequency
-// dynamically over time ( e.g. alleviate server congestion )
-// TODO currently unused
-var _user_polling_renew_delay = 0
+var MAX_USER_POLLING_RENEW_DELAY = ( 1000 * 25 )
+var MIN_USER_POLLING_RENEW_DELAY = ( 0 )
+
+// how long to wait before consider user disconnected
+// CC.longpoll_renew_interval and CC.user_polling_renew_delay is taken
+// into account before the final timeout time calculation
+var DC_TIMEOUT = ( 1000 * 30 )
 
 function debug () {
   if ( process.env.DEBUG_KIITE ) {
@@ -15,7 +20,63 @@ function debug () {
   }
 }
 
-module.exports = function ( server ) {
+module.exports = function ( server, opts ) {
+  // Crowd Control
+  var CC = {
+    // tell clients to delay their polling frequency
+    // dynamically over time ( e.g. alleviate server congestion )
+    user_polling_renew_delay: 0,
+
+    longpoll_renew_interval: MAX_LONGPOLL_RENEW_INTERVAL
+  }
+
+  opts = opts || {
+    user_delay: function user_delay ( numOfClients ) {
+      const ms = (
+        Math.floor(
+          Math.pow( numOfClients, 1.15 )
+        ) * 10
+      )
+
+      return ms
+    },
+
+    renew_interval: function renew_interval ( numOfClients ) {
+      const ms = (
+        Math.floor(
+          Math.pow( numOfClients, 1.15 )
+        ) * 10
+      )
+
+      return MAX_LONGPOLL_RENEW_INTERVAL - ms
+    }
+  }
+
+  function updateCC () {
+    _clientsConnected
+
+    var new_user_polling_renew_delay = opts.user_delay( _clientsConnected )
+    if ( new_user_polling_renew_delay < MIN_USER_POLLING_RENEW_DELAY ) {
+      new_user_polling_renew_delay = MIN_USER_POLLING_RENEW_DELAY
+    }
+    if ( new_user_polling_renew_delay > MAX_USER_POLLING_RENEW_DELAY ) {
+      new_user_polling_renew_delay = MAX_USER_POLLING_RENEW_DELAY
+    }
+    CC.user_polling_renew_delay = new_user_polling_renew_delay
+    debug( 'updated CC.user_polling_renew_delay: ' + CC.user_polling_renew_delay )
+
+    longpoll_renew_interval
+    var new_longpoll_renew_interval = opts.renew_interval( _clientsConnected )
+    if ( new_longpoll_renew_interval < MIN_USER_POLLING_RENEW_DELAY ) {
+      new_longpoll_renew_interval = MIN_USER_POLLING_RENEW_DELAY
+    }
+    if ( new_longpoll_renew_interval > MAX_USER_POLLING_RENEW_DELAY ) {
+      new_longpoll_renew_interval = MAX_USER_POLLING_RENEW_DELAY
+    }
+    CC.longpoll_renew_interval = new_longpoll_renew_interval
+    debug( 'updated CC.longpoll_renew_interval: ' + CC.longpoll_renew_interval )
+  }
+
   // load nodejs deps dynamically when needed
   var fs = require( 'fs' )
   var path = require( 'path' )
@@ -237,11 +298,11 @@ module.exports = function ( server ) {
                 client.longpollResponse,
                 {
                   evt: 'renew',
-                  uprd: _user_polling_renew_delay,
+                  uprd: CC.user_polling_renew_delay,
                 }
               )
               delete client.longpollResponse
-            }, LONGPOLL_RENEW_INTERVAL )
+            }, CC.longpoll_renew_interval )
 
             flush( client )
             break
@@ -281,7 +342,7 @@ module.exports = function ( server ) {
           sendMessage( res, {
             evt: 'connected',
             ID: ID,
-            uprd: _user_polling_renew_delay
+            uprd: CC.user_polling_renew_delay
           } )
 
           var socket = createEventEmitter()
@@ -301,6 +362,9 @@ module.exports = function ( server ) {
           }
 
           api.clientsConnected = ++_clientsConnected
+
+          // update dynamic congestion controls
+          updateCC()
 
           ee.emit( 'connect', socketApi )
           ee.emit( 'connection', socketApi )
@@ -355,7 +419,7 @@ module.exports = function ( server ) {
           {
             evt: 'messages',
             messages: buffer,
-            uprd: _user_polling_renew_delay
+            uprd: CC.user_polling_renew_delay
           }
         )
         delete client.longpollResponse
@@ -368,7 +432,7 @@ module.exports = function ( server ) {
   function updateDCTimeout ( client, ms ) {
     clearTimeout( client.DCTimeout )
 
-    const timeoutTime = ( ms || DC_TIMEOUT ) + _user_polling_renew_delay
+    const timeoutTime = ( ms || DC_TIMEOUT ) + CC.user_polling_renew_delay
 
     client.DCTimeout = setTimeout( function () {
       if ( client.longpollResponse ) {
@@ -384,6 +448,9 @@ module.exports = function ( server ) {
 
       api.clientsConnected = --_clientsConnected
       delete api.clients[ client.ID ]
+
+      // update dynamic congestion controls
+      updateCC()
 
       client.socket.emit( 'disconnect' )
     }, timeoutTime )

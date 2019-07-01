@@ -61,8 +61,6 @@ module.exports = function ( server, opts ) {
   }
 
   function updateCC () {
-    _clientsConnected
-
     var new_user_polling_renew_delay = opts.user_delay( _clientsConnected )
     if ( new_user_polling_renew_delay < MIN_USER_POLLING_RENEW_DELAY ) {
       new_user_polling_renew_delay = MIN_USER_POLLING_RENEW_DELAY

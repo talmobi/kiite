@@ -32,6 +32,9 @@ module.exports = function ( server, opts ) {
 
   opts = opts || {}
 
+  // enable dynamic crowd control
+  opts.enableCC = opts.enableCC || false
+
   if ( !opts.user_delay ) {
     opts.user_delay = function user_delay ( numOfClients ) {
       if ( numOfClients < 20 ) return MIN_USER_POLLING_RENEW_DELAY

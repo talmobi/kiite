@@ -21,7 +21,9 @@ function debug () {
 }
 
 module.exports = function ( server, opts ) {
-  // Crowd Control
+  // Crowd Control: used to shorten longpolling interval
+  // and delaying users longpolling requests based on clients connected
+  // to help congestion control etc
   var CC = {
     // tell clients to delay their polling frequency
     // dynamically over time ( e.g. alleviate server congestion )

@@ -65,7 +65,6 @@ module.exports = function ( server, opts ) {
     CC.user_polling_renew_delay = new_user_polling_renew_delay
     debug( 'updated CC.user_polling_renew_delay: ' + CC.user_polling_renew_delay )
 
-    longpoll_renew_interval
     var new_longpoll_renew_interval = opts.renew_interval( _clientsConnected )
     if ( new_longpoll_renew_interval < MIN_USER_POLLING_RENEW_DELAY ) {
       new_longpoll_renew_interval = MIN_USER_POLLING_RENEW_DELAY

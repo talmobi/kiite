@@ -66,11 +66,11 @@ module.exports = function ( server, opts ) {
     debug( 'updated CC.user_polling_renew_delay: ' + CC.user_polling_renew_delay )
 
     var new_longpoll_renew_interval = opts.renew_interval( _clientsConnected )
-    if ( new_longpoll_renew_interval < MIN_USER_POLLING_RENEW_DELAY ) {
-      new_longpoll_renew_interval = MIN_USER_POLLING_RENEW_DELAY
+    if ( new_longpoll_renew_interval < MIN_LONGPOLL_RENEW_INTERVAL ) {
+      new_longpoll_renew_interval = MIN_LONGPOLL_RENEW_INTERVAL
     }
-    if ( new_longpoll_renew_interval > MAX_USER_POLLING_RENEW_DELAY ) {
-      new_longpoll_renew_interval = MAX_USER_POLLING_RENEW_DELAY
+    if ( new_longpoll_renew_interval > MAX_LONGPOLL_RENEW_INTERVAL ) {
+      new_longpoll_renew_interval = MAX_LONGPOLL_RENEW_INTERVAL
     }
     CC.longpoll_renew_interval = new_longpoll_renew_interval
     debug( 'updated CC.longpoll_renew_interval: ' + CC.longpoll_renew_interval )

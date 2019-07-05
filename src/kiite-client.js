@@ -141,6 +141,7 @@ module.exports = function connect ( _params ) {
   function disconnect () {
     var params = cpy( _params )
 
+    // tell server we are disconnecting
     params.data = {
       ID: _ID,
       evt: 'disconnect'

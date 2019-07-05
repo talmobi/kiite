@@ -147,6 +147,9 @@ module.exports = function connect ( _params ) {
       evt: 'disconnect'
     }
 
+    // clear _ID
+    _ID = undefined
+
     debug( 'disconnecting' )
     req(
       params,

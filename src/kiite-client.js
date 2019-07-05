@@ -411,6 +411,12 @@ module.exports = function connect ( _params ) {
               debug( 'unknown connect response' )
               debug( body )
             }
+          } else {
+            // unknown res status (possibly 500 server offline?)
+            debug( 'unknown res.status: ' + res.status )
+            debug( body )
+
+            return handleConnectError()
           }
         }
       }

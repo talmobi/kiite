@@ -243,9 +243,6 @@ module.exports = function connect ( _params ) {
       ee.emit( 'disconnected' )
       verbose( 'disconnected by server' )
 
-      // kill the _ID ( will reconnect )
-      _ID = undefined
-
       setTimeout( function () {
         reconnect()
       }, 1000 )
@@ -318,9 +315,6 @@ module.exports = function connect ( _params ) {
                 break
             }
 
-            // kill the _ID ( will reconnect )
-            _ID = undefined
-
             setTimeout( function () {
               reconnect() // reconnect
             }, 1000 )
@@ -352,10 +346,10 @@ module.exports = function connect ( _params ) {
   }
 
   function reconnect () {
+    if ( _closed ) return
+
     // kill the _ID ( will reconnect )
     _ID = undefined
-
-    if ( _closed ) return
 
     var params = cpy( _params )
 

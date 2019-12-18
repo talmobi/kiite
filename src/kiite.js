@@ -106,6 +106,9 @@ module.exports = function ( server, opts ) {
     clients: {}
   }
 
+  // common analogues method name
+  api.broadcast = api.emit
+
   var _clientsConnected = 0
 
   function emitAll ( evt, data, exceptID ) {

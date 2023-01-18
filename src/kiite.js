@@ -15,7 +15,7 @@ var MIN_USER_POLLING_RENEW_DELAY = ( 0 )
 var DC_TIMEOUT = ( 1000 * 30 )
 
 function debug () {
-  if ( process.env.DEBUG_KIITE ) {
+  if ( typeof process === 'object' && process.env.DEBUG_KIITE ) {
     console.log.apply( this, arguments )
   }
 }

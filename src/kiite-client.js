@@ -74,19 +74,21 @@ module.exports = function connect ( _params ) {
     },
     clients: {},
     close: function () {
+      scheduleFlush(true)
+
       _closed = true
       disconnect()
     }
   }
 
-  function scheduleFlush () {
+  function scheduleFlush ( immediate ) {
     clearTimeout( _flushTimeout )
 
     if ( _buffer.length > 0 ) {
       // check throttle
       var now = Date.now()
       var delta = ( now - _flushTime )
-      if ( delta > THROTTLE ) {
+      if ( immediate || delta > THROTTLE ) {
         // too long has passed, flush immediately!
         flush()
         _flushTime = Date.now()

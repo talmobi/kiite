@@ -40,9 +40,10 @@
     "faucet": "0.0.1",
     "object-assign": "~4.1.1",
     "passlint": "0.0.13",
-    "pinkyjs": "0.1.6",
+    "pinkyjs": "~0.1.6",
+    "puppeteer": "~19.5.2",
     "spacestandard": "0.0.6",
-    "tape": "~4.8.0",
+    "tape": "~5.6.3",
     "uglify-js": "~3.1.10"
   }
 }

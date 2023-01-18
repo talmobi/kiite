@@ -3,6 +3,7 @@ var path = require( 'path' )
 
 var http = require( 'http' )
 
+// var kiite = require( '../src/index.js' )
 var kiite = require( '../dist/kiite.min.js' )
 
 var express = require( 'express' )

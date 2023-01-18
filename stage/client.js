@@ -1,4 +1,5 @@
 var kiite = require( '../dist/kiite.min.js' )
+// var kiite = require( '../src/index.js' )
 var io = kiite.connect( { port: 3456 } )
 
 io.on( 'chat-message', function ( text ) {

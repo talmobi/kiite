@@ -7,7 +7,7 @@ var LONGPOLL_TIMEOUT_COEFFICIENT = 1.30 // 30%
 function debug () {
   if (
     ( typeof window === 'object' && window[ '_debug_kiite' ] ) ||
-    ( process && process.env && process.env.DEBUG_KIITE )
+    ( typeof process === 'object' && process.env && process.env.DEBUG_KIITE )
   ) {
     console.log.apply( this, arguments )
   }
@@ -18,7 +18,7 @@ function verbose () {
     (
       typeof window === 'object' &&
       ( window[ '_debug_kiite' ] || window[ '_verbose_kiite' ] )
-    ) || ( process && process.env && process.env.DEBUG_KIITE )
+    ) || ( typeof process === 'object' && process.env && process.env.DEBUG_KIITE )
   ) {
     console.log.apply( this, arguments )
   }

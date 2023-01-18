@@ -269,7 +269,8 @@ module.exports = function ( server, opts ) {
 
         updateDCTimeout( client )
 
-        function unexpectedResponseCloseHandler () {
+        client.longpollResponseDC = function unexpectedResponseCloseHandler () {
+          delete client.longpollResponseDC
           // request closed unexpectedly
           // probably disconnected
           debug( ' CLOSE -- response stream closed unexpectedly ' )
@@ -278,7 +279,7 @@ module.exports = function ( server, opts ) {
             updateDCTimeout( client, 1500 )
           }
         }
-        res.on( 'close', unexpectedResponseCloseHandler )
+        res.on( 'close', client.longpollResponseDC )
 
         // existing client
         debug( 'existing client [ ' + ID + ' ], evt: ' + data.evt )
@@ -311,7 +312,7 @@ module.exports = function ( server, opts ) {
               // events for a long enough time, tell the user to issue another longpoll
               // if we wait too long, (~45 seconds) the browser will automatically error out the
               // request, we do not want that.
-              client.longpollResponse.removeListener( 'close', unexpectedResponseCloseHandler )
+              client.longpollResponseDC && client.longpollResponse.removeListener( 'close', client.longpollResponseDC )
               sendMessage(
                 client.longpollResponse,
                 {
@@ -461,7 +462,7 @@ module.exports = function ( server, opts ) {
         // new longpoll received even after old is still active
         // -> delete and abort the old one
         debug( 'warning! old longpoll rsponse left unhandled, client ID: ' + client.ID )
-        client.longpollResponse.removeListener( 'close', unexpectedResponseCloseHandler )
+        client.longpollResponseDC && client.longpollResponse.removeListener( 'close', client.longpollResponseDC )
         client.longpollResponse.statusCode = 444
         client.longpollResponse.write( '444 Disconnected by server.' )
         client.longpollResponse.end()

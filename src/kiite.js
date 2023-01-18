@@ -290,6 +290,7 @@ module.exports = function ( server, opts ) {
             break
 
           case 'longpoll':
+            debug( 'longpoll evt ' )
             if ( client.longpollResponse ) {
               // throw new Error( 'duplicate longpolls received from the same client' )
               debug( 'duplicate longpolls received from the same client' )
@@ -319,10 +320,12 @@ module.exports = function ( server, opts ) {
               delete client.longpollResponse
             }, CC.longpoll_renew_interval )
 
+            debug( 'flushing' )
             flush( client )
             break
 
           case 'messages':
+            debug( 'messages evt ' )
             handleClientMessages( client, res, data.messages )
             break
 
@@ -439,8 +442,10 @@ module.exports = function ( server, opts ) {
         )
         delete client.longpollResponse
       } else {
-        // debug( 'wanted to flush but no longpoll available' )
+        debug( 'wanted to flush but no longpoll available' )
       }
+    } else {
+        debug( 'wanted to flush but buffer is empty' )
     }
   }
 
@@ -453,6 +458,7 @@ module.exports = function ( server, opts ) {
       if ( client.longpollResponse ) {
         // new longpoll received even after old is still active
         // -> delete and abort the old one
+        debug( 'warning! old longpoll rsponse left unhandled, client ID: ' + client.ID )
         client.longpollResponse.statusCode = 444
         client.longpollResponse.write( '444 Disconnected by server.' )
         client.longpollResponse.end()

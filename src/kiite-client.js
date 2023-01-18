@@ -5,16 +5,20 @@ var createEventEmitter = require( './ee.js' )
 var LONGPOLL_TIMEOUT_COEFFICIENT = 1.30 // 30%
 
 function debug () {
-  if ( typeof window === 'object' && window[ '_debug_kiite' ] ) {
+  if (
+    ( typeof window === 'object' && window[ '_debug_kiite' ] ) ||
+    ( process && process.env && process.env.DEBUG_KIITE )
+  ) {
     console.log.apply( this, arguments )
   }
 }
 
 function verbose () {
   if (
-    typeof window === 'object' && (
-      window[ '_debug_kiite' ] || window[ '_verbose_kiite' ]
-    )
+    (
+      typeof window === 'object' &&
+      ( window[ '_debug_kiite' ] || window[ '_verbose_kiite' ] )
+    ) || ( process && process.env && process.env.DEBUG_KIITE )
   ) {
     console.log.apply( this, arguments )
   }
@@ -252,6 +256,12 @@ module.exports = function connect ( _params ) {
     req(
       params,
       function ( err, res, body ) {
+        if (err) {
+          debug('longpolling error response')
+        } else {
+          debug('longpolling response')
+        }
+
         if ( _ignore_response ) return // handled already
 
         // remember to clear the timeout on success
@@ -273,7 +283,7 @@ module.exports = function connect ( _params ) {
               return handleLongpollError()
             }
 
-            debug( 'longpoll evt: ' + data.evt )
+            debug( 'received longpoll evt: ' + data.evt )
 
             if ( data[ 'uprd' ] ) {
               _user_polling_renew_delay = data[ 'uprd' ]

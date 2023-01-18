@@ -29,14 +29,13 @@
     "url": "https://github.com/talmobi/kiite/issues",
     "email": "talmo.christian@gmail.com"
   },
-  "dependencies": {},
   "devDependencies": {
     "babel-core": "~6.26.0",
     "babel-preset-env": "~1.6.1",
     "babelify": "~8.0.0",
     "browserify": "~14.5.0",
     "cuid": "~1.3.8",
-    "dasu": "~0.4.1",
+    "dasu": "~0.4.3",
     "express": "~4.16.2",
     "faucet": "0.0.1",
     "object-assign": "~4.1.1",

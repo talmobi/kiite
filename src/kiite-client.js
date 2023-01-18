@@ -59,6 +59,7 @@ module.exports = function connect ( _params ) {
 
   // our user id given by the server
   var _ID
+  var _count = 0
 
   // this is the functions return value
   var api = {
@@ -212,7 +213,8 @@ module.exports = function connect ( _params ) {
 
     params.data = {
       ID: _ID,
-      evt: 'longpoll'
+      evt: 'longpoll',
+      count: _count++,
     }
 
     // this is set to true when the longpoll has been handled by the
